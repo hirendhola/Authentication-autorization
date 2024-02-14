@@ -20,7 +20,7 @@ function Welcome() {
 
   const fetchUserData = async () => {
     try {
-      const res = await axios.get("http://localhost:5001/user", {
+      const res = await axios.get("https://authentication-autorization.vercel.app/user", {
         withCredentials: true,
       });
       setUserData(res.data.user);
@@ -42,7 +42,7 @@ function Welcome() {
 
   const refreshToken = async () => {
     try {
-      const res = await axios.get("http://localhost:5001/refresh", {
+      const res = await axios.get("https://authentication-autorization.vercel.app/refresh", {
         withCredentials: true,
       });
       console.log(res)
@@ -55,7 +55,7 @@ function Welcome() {
 
   const handleLogout = async () => {
     try {
-      await axios.post("http://localhost:5001/logout", null, {
+      await axios.post("https://authentication-autorization.vercel.app/logout", null, {
         withCredentials: true,
         
       });
