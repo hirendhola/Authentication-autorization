@@ -7,7 +7,7 @@ require("dotenv").config()
 
 const app = express()
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: 'https://authentication-autorization-frontend.vercel.app',
     methods: ['POST', 'GET', 'DELETE', 'PUT'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
