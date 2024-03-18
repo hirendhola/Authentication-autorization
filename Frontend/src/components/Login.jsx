@@ -29,7 +29,11 @@ const [isLoggedIn, setIsLoggedIn] = useRecoilState(userState)
   console.log(isLoggedIn)
   const sendPayload = async () => {
     try {
+<<<<<<< HEAD
       const res = await axios.post("http://localhost:5001/login", formValue, {
+=======
+      const res = await axios.post("https://authentication-autorization.vercel.app/login", formValue, {
+>>>>>>> parent of 7aa14ba (admin route)
         headers: {
           "Content-Type": "application/json",
         },

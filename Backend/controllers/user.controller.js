@@ -1,10 +1,11 @@
-const Admin = require('../models/Admin');
-const Department = require('../models/Department');
+const User = require('../models/User');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken")
 
+//signup
+// signup
 exports.signup = async (req, res) => {
-    const { name, email, password, department, role } = req.body;
+    const { name, email, password } = req.body;
     try {
         if (req.exists) {
             return res.status(409).json({
@@ -12,33 +13,15 @@ exports.signup = async (req, res) => {
             });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
-
-        const hod = new Admin({
+        const user = new User({
             name,
             email,
             password: hashedPassword,
-            role
         });
-        
-        await hod.save()
-        .then(hod => {
-          const newDepartment = new Department({
-            name: department, // Example department name
-            hod: hod._id, // Associate the HOD with the department
-          });
-      
-          // Save the Department to the database
-          return newDepartment.save();
-        })
-        .then(department => {
-          console.log('Department created with HOD:', department);
-        })
-        .catch(error => {
-          console.error('Error creating department:', error);
-        });
+        await user.save();
         res.status(201).json({
             message: "Signup successful",
-            hod: {
+            user: {
                 name,
                 email,
             }
@@ -49,7 +32,7 @@ exports.signup = async (req, res) => {
     }
 };
 
-  
+
 //login
 exports.login = async (req, res) => {
     const { email, password } = req.body;
@@ -57,11 +40,10 @@ exports.login = async (req, res) => {
     try {
         if (!req.exists) {
             return res.status(404).json({
-                message: 'Admin does not exist',
+                message: 'User does not exist',
             });
         }
-
-        const isPasswordCorrect = await bcrypt.compare(password, req.user.password);
+        const isPasswordCorrect = await bcrypt.compare(password, req.password);
 
         if (isPasswordCorrect) {
             const accessToken = jwt.sign({
@@ -69,6 +51,7 @@ exports.login = async (req, res) => {
             }, process.env.JSONWENTOKEN_SIGN_SECRET, {
                 expiresIn: "15s"
             });
+            console.l
             const refreshToken = jwt.sign({
                 id: req.id,
             }, process.env.JSONWENTOKEN_REFRESH_SECRET, {
@@ -91,49 +74,48 @@ exports.login = async (req, res) => {
             res.status(401).json({ message: 'Invalid password' });
         }
     } catch (error) {
+      
         res.status(500).json({ message: 'Login failed' });
     }
 };
 
-exports.getAdmin = async (req, res) => {
+exports.getUser = async (req, res) => {
+    const userId = req.id;
+    const { exp } = req.user;
     try {
-        const hod = await Admin.findById(req.user.id, "-password");
-        if (!hod) return res.status(404).json({ message: "Admin not found" });
-        res.status(200).json({ hod });
+        const user = await User.findById(userId, "-password")
+        if (!user) return res.status(404).json({ message: "user not found" })
+        res.status(200).json({ user,exp })
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error fetching admin' });
+        return new Error(error)
     }
-};
-
+}
 
 exports.refreshToken = (req, res) => {
     const refreshToken = req.cookies.refresh_token;
-
+   
     if (!refreshToken) {
         return res.status(403).json({ message: 'Refresh token is required.' });
     }
 
-    jwt.verify(refreshToken, process.env.JSONWENTOKEN_REFRESH_SECRET, (err, Admin) => {
+    jwt.verify(refreshToken, process.env.JSONWENTOKEN_REFRESH_SECRET, (err, user) => {
         if (err) {
             return res.status(403).json({ message: 'Invalid refresh token.' });
         }
 
-        const accessToken = jwt.sign({ id: Admin.id }, process.env.JSONWENTOKEN_SIGN_SECRET, {
+        const accessToken = jwt.sign({ id: user.id }, process.env.JSONWENTOKEN_SIGN_SECRET, {
             expiresIn: "15s"
         });
 
         // Set the new access token in the response cookie
         res.cookie("access_token", accessToken, {
             path: '/',
-            expires: new Date(Date.now() + 1000 * 15),
+            expires: new Date(Date.now() + 1000 * 15), 
             httpOnly: true,
             sameSite: 'lax'
         }).json({ message: 'Access token refreshed successfully' });
     });
 }
-
-
 exports.logout = (req, res) => {
     res.clearCookie("access_token", { path: '/' });
     res.clearCookie("refresh_token", { path: '/' });

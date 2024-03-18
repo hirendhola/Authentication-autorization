@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // import { useState } from "react"
 // import axios from "axios"
 // import { useNavigate } from "react-router-dom";
@@ -69,6 +70,8 @@
 
 // export default Signup
 
+=======
+>>>>>>> parent of 7aa14ba (admin route)
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -106,7 +109,11 @@ function Signup() {
   };
 
   const sendPayload = async () => {
+<<<<<<< HEAD
     const res = await axios.post("http://localhost:5001/signup", formValue, {
+=======
+    const res = await axios.post("https://authentication-autorization.vercel.app/signup", formValue, {
+>>>>>>> parent of 7aa14ba (admin route)
       headers: {
         "Content-Type": "application/json",
       },

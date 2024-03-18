@@ -15,8 +15,8 @@ exports.verifyToken = async (req, res, next) => {
                 return res.status(500).json({ error: "Internal server error" });
             }
             req.user = user;
-            req.id = user.id;
-            next();
+            req.id = user.id; 
+            next(); 
         });
     } catch (err) {
         console.error("Error verifying token:", err);
