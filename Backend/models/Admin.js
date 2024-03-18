@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const Department = require("./Department");
 const Schema = mongoose.Schema;
 
 const hodSchema = new Schema({
@@ -29,4 +28,4 @@ const hodSchema = new Schema({
 });
 
 const HOD = mongoose.model("HOD", hodSchema);
-module.exports =  HOD ;
+module.exports = HOD;
