@@ -1,6 +1,7 @@
 const express = require("express")
 const mongoose = require("mongoose")
-const router = require("./routes/user.route.js")
+const studentrouter = require("./routes/student.route.js")
+const adminrouter = require("./routes/admin.route.js")
 const cookieParser = require("cookie-parser")
 const cors = require("cors")
 require("dotenv").config()
@@ -12,9 +13,11 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
 }))
+
 app.use(cookieParser())
 app.use(express.json())
-app.use("/", router)
+app.use("/student", studentrouter)
+app.use("/admin", adminrouter)
 
 mongoose
     .connect(process.env.MONGO_CONNECTION_URL)
